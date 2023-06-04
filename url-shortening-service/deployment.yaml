@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: url-shortening-service
+spec:
+  selector:
+    matchLabels:
+      app: url-shortening-service
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: url-shortening-service
+    spec:
+      containers:
+        - name: url-shortening-service
+          image: wimbd/url-shortening-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080

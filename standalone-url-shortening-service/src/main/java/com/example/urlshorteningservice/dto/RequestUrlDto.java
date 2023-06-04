@@ -10,14 +10,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UrlDto {
+public class RequestUrlDto {
 
     @JsonProperty("url")
     private String url;
 
-    @JsonProperty("shortUrl")
-    private String shortUrl;
-
-    @JsonProperty("usageCounter")
-    private long usageCounter;
+    @JsonProperty("userId")
+    private String userId;
 }

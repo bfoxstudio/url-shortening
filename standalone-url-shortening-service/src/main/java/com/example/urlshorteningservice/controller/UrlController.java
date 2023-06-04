@@ -16,8 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -60,39 +58,36 @@ public class UrlController {
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ResponseUrlDto.class)))
     @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema()))
     public ResponseEntity<ResponseUrlDto> createShortUrl(
-            @AuthenticationPrincipal Jwt principal,
             @RequestBody() RequestUrlDto urlDto) {
         Url url = conversionService.convert(urlDto, Url.class);
-        String userId = principal.getSubject();
-        url.setUserId(userId);
         url = urlService.getShortUrl(url);
         return ResponseEntity.ok(conversionService.convert(url, ResponseUrlDto.class));
     }
 
-    @GetMapping("/api/v1/user/urls")
+    @GetMapping("/api/v1/user/{userId}/urls")
     @Operation(summary = "Get All User URLs", description = "Get all URLs for a specific user")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ResponseUrlDto.class))))
     @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema()))
     public ResponseEntity<List<ResponseUrlDto>> getAllUserUrls(
-            @AuthenticationPrincipal Jwt principal
+            @Parameter(description = "UserId", example = "550e8400-e29b-41d4-a716-446655440000")
+            @PathVariable String userId
     ) {
-        String userId = principal.getSubject();
         List<Url> allUserUrls = urlService.getAllUserUrls(userId);
         List<ResponseUrlDto> urlsDto = allUserUrls.stream().map(x -> conversionService.convert(x, ResponseUrlDto.class)).toList();
         return ResponseEntity.ok(urlsDto);
     }
 
-    @DeleteMapping("/api/v1/user/urls/{shortUrl}")
+    @DeleteMapping("/api/v1/user/{userId}/urls/{shortUrl}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Disable URL", description = "Disable a URL")
     @ApiResponse(responseCode = "200", description = "Url disabled", content = @Content(schema = @Schema()))
     @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema()))
     public void disableUrl(
-            @AuthenticationPrincipal Jwt principal,
             @Parameter(description = "ShorUrl", example = "d7dcca4")
-            @PathVariable String shortUrl
+            @PathVariable String shortUrl,
+            @Parameter(description = "UserId", example = "550e8400-e29b-41d4-a716-446655440000")
+            @PathVariable String userId
     ) {
-        String userId = principal.getSubject();
         urlService.disableUrl(shortUrl, userId);
     }
 }
