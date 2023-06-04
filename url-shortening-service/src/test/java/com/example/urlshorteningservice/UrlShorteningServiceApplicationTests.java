@@ -1,7 +1,9 @@
 package com.example.urlshorteningservice;
 
-import com.example.urlshorteningservice.dto.UrlDto;
+import com.example.urlshorteningservice.dto.RequestUrlDto;
+import com.example.urlshorteningservice.dto.ResponseUrlDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,9 +44,8 @@ class UrlShorteningServiceApplicationTests {
     @Test()
     @DisplayName("Test shortUrl creation and redirect")
     void shouldCreateAndReceiveURL() throws Exception {
-
-        UrlDto urlDto = UrlDto.builder()
-                .url("https://media.tenor.com/x8v1oNUOmg4AAAAd/rickroll-roll.gif")
+        RequestUrlDto urlDto = RequestUrlDto.builder()
+                .url("https://example.com")
                 .build();
         String getUrlRequestBody = objectMapper.writeValueAsString(urlDto);
 
@@ -59,9 +60,10 @@ class UrlShorteningServiceApplicationTests {
                 .andReturn();
 
         String content = mvcResult.getResponse().getContentAsString();
-        UrlDto urlCreationResponse = objectMapper.readValue(content, UrlDto.class);
+        ResponseUrlDto urlCreationResponse = objectMapper.readValue(content, ResponseUrlDto.class);
 
         Assertions.assertEquals(urlDto.getUrl(), urlCreationResponse.getUrl());
+        Assertions.assertTrue(Strings.isNotEmpty(urlCreationResponse.getShortUrl()));
 
         mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(urlCreationResponse.getShortUrl())
                 ).andExpect(status().isMovedPermanently())
