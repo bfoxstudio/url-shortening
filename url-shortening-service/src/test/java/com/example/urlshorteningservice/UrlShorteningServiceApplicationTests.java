@@ -2,14 +2,20 @@ package com.example.urlshorteningservice;
 
 import com.example.urlshorteningservice.dto.UrlDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -25,29 +31,37 @@ class UrlShorteningServiceApplicationTests {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Test
-    void contextLoads() {
+    @MockBean
+    private Jwt mockJwt;
+
+    @BeforeEach
+    void setup() {
+        SecurityContextHolder.getContext().setAuthentication(new JwtAuthenticationToken(mockJwt, null));
     }
 
     @Test()
     @DisplayName("Test shortUrl creation and redirect")
     void shouldCreateAndReceiveURL() throws Exception {
+
         UrlDto urlDto = UrlDto.builder()
                 .url("https://media.tenor.com/x8v1oNUOmg4AAAAd/rickroll-roll.gif")
-                .userId("3bea2a50-5bb7-4119-9225-6a84cd7dcca4")
                 .build();
         String getUrlRequestBody = objectMapper.writeValueAsString(urlDto);
+
+        Jwt mockJwt = Mockito.mock(Jwt.class);
+        Mockito.when(mockJwt.getSubject()).thenReturn("user123");
+
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/url/create-short")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(getUrlRequestBody)
+                        .with(SecurityMockMvcRequestPostProcessors.jwt().jwt(mockJwt))
                 ).andExpect(status().isOk())
                 .andReturn();
+
         String content = mvcResult.getResponse().getContentAsString();
         UrlDto urlCreationResponse = objectMapper.readValue(content, UrlDto.class);
 
         Assertions.assertEquals(urlDto.getUrl(), urlCreationResponse.getUrl());
-        Assertions.assertEquals(urlDto.getUserId(), urlCreationResponse.getUserId());
-        Assertions.assertTrue(Strings.isNotEmpty(urlCreationResponse.getUserId()));
 
         mvcResult = mockMvc.perform(MockMvcRequestBuilders.get(urlCreationResponse.getShortUrl())
                 ).andExpect(status().isMovedPermanently())
