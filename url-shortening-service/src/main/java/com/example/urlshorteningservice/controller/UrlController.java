@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
@@ -28,6 +30,7 @@ import java.util.Optional;
 @RequestMapping("/")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "URL Controller", description = "Endpoints for URL operations")
 public class UrlController {
 
     private final UrlService urlService;
@@ -56,7 +59,7 @@ public class UrlController {
     }
 
     @PostMapping("/api/v1/url/create-short")
-    @Operation(summary = "Get Short URL", description = "Generate a short URL for the provided long URL")
+    @Operation(summary = "Get Short URL", description = "Generate a short URL for the provided long URL", security = { @SecurityRequirement(name = "bearer-jwt") })
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ResponseUrlDto.class)))
     @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema()))
     public ResponseEntity<ResponseUrlDto> createShortUrl(
@@ -70,7 +73,7 @@ public class UrlController {
     }
 
     @GetMapping("/api/v1/user/urls")
-    @Operation(summary = "Get All User URLs", description = "Get all URLs for a specific user")
+    @Operation(summary = "Get All User URLs", description = "Get all URLs for a specific user", security = { @SecurityRequirement(name = "bearer-jwt") })
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ResponseUrlDto.class))))
     @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema()))
     public ResponseEntity<List<ResponseUrlDto>> getAllUserUrls(
@@ -84,7 +87,7 @@ public class UrlController {
 
     @DeleteMapping("/api/v1/user/urls/{shortUrl}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Disable URL", description = "Disable a URL")
+    @Operation(summary = "Disable URL", description = "Disable a URL", security = { @SecurityRequirement(name = "bearer-jwt") })
     @ApiResponse(responseCode = "200", description = "Url disabled", content = @Content(schema = @Schema()))
     @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema()))
     public void disableUrl(

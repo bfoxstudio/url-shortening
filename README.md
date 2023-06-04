@@ -7,7 +7,7 @@ docker run -d -p 8080:8080 -t --rm wimbd/url-shortening-service:latest
 #### For testing, you can use the following requests  
 When launching the `url-shortening-service`, which has integration with Keycloak, you don't need to specify a `userId`.
 
-###### Creating a short link
+###### Create a short link
 ```shell
 curl -X POST http://localhost:8080/api/v1/url/create-short \
 --header 'Content-Type: application/json' \
@@ -17,17 +17,17 @@ curl -X POST http://localhost:8080/api/v1/url/create-short \
 }'
 ```
 
-###### Following the link
+###### Follow the link
 ```shell
 curl -v http://localhost:8080/62cebf0
 ```
 
-###### Getting all links for a user
+###### Get all links for the user
 ```shell
 curl http://localhost:8080/api/v1/user/550e8400-e29b-41d4-a716-446655440000/urls
 ```
 
-###### Disabling a link
+###### Disable the link
 ```shell
 curl -X DELETE http://localhost:8080/api/v1/user/550e8400-e29b-41d4-a716-446655440000/urls/62cebf0
 ```
