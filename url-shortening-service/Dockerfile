@@ -4,8 +4,8 @@
 #COPY ${JAR_FILE} app.jar
 #ENTRYPOINT ["java","-jar","/app.jar"]
 
-#docker build -t url-shortening-service:1.0.1 .
-#docker run -d -p 8080:8080 -t --rm url-shortening-service:1.0.1
+#docker build -t url-shortening-service .
+#docker run -d -p 8080:8080 -t --rm url-shortening-service:latest
 
 FROM eclipse-temurin:17-jdk-alpine as build
 WORKDIR /workspace/app
