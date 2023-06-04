@@ -57,6 +57,7 @@ public class UrlController {
     @PostMapping("/api/v1/url/create-short")
     @Operation(summary = "Get Short URL", description = "Generate a short URL for the provided long URL")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UrlDto.class)))
+    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema()))
     public ResponseEntity<UrlDto> createShortUrl(
             @AuthenticationPrincipal Jwt principal,
             @RequestBody() UrlDto urlDto) {
@@ -70,6 +71,7 @@ public class UrlController {
     @GetMapping("/api/v1/user/urls")
     @Operation(summary = "Get All User URLs", description = "Get all URLs for a specific user")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = UrlDto.class))))
+    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema()))
     public ResponseEntity<List<UrlDto>> getAllUserUrls(
             @AuthenticationPrincipal Jwt principal
     ) {
@@ -81,7 +83,9 @@ public class UrlController {
 
     @DeleteMapping("/api/v1/user/urls/{shortUrl}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Disable URL", description = "Disable a URL for a specific user")
+    @Operation(summary = "Disable URL", description = "Disable a URL")
+    @ApiResponse(responseCode = "200", description = "Url disabled", content = @Content(schema = @Schema()))
+    @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content(schema = @Schema()))
     public void disableUrl(
             @AuthenticationPrincipal Jwt principal,
             @Parameter(description = "ShorUrl", example = "d7dcca4")

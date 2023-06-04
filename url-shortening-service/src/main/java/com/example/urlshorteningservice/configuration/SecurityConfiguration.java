@@ -6,25 +6,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
-//@Configuration
-//@EnableWebFluxSecurity
-//public class SecurityConfiguration {
-//
-//    @Bean
-//    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity serverHttpSecurity) {
-//        serverHttpSecurity
-//                .csrf().disable()
-//                .authorizeExchange(exchange ->
-//                        exchange.pathMatchers("/*")
-//                                .permitAll()
-//                                .anyExchange()
-//                                .authenticated())
-//                .oauth2ResourceServer(ServerHttpSecurity.OAuth2ResourceServerSpec::jwt);
-//        return serverHttpSecurity.build();
-//    }
-//}
-
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
@@ -34,7 +15,9 @@ public class SecurityConfiguration {
         http
                 .csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/*").permitAll()
+                .requestMatchers("/*",
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .oauth2ResourceServer().jwt();
