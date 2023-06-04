@@ -7,6 +7,7 @@ import jakarta.persistence.Table;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.Date;
 
 @Entity
 @Table(name = "urls")
@@ -35,4 +36,11 @@ public class Url implements Serializable {
     @Column(name = "is_active")
     @Builder.Default
     private boolean isActive = true;
+
+    @Column(name = "creation_date")
+    @Builder.Default
+    private Date creationDate = new Date();
+
+    @Column(name = "expiration_date")
+    private Date expirationDate;
 }

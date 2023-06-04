@@ -13,7 +13,6 @@ public class UrlDtoToEntityConverter implements Converter<UrlDto, Url> {
     public Url convert(UrlDto source) {
         Url result = new Url();
         result.setOriginalUrl(source.getUrl());
-        result.setUserId(source.getUserId());
         return result;
     }
 }

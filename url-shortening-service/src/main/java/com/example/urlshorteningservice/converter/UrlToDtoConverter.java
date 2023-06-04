@@ -16,7 +16,6 @@ public class UrlToDtoConverter implements Converter<Url, UrlDto> {
     public UrlDto convert(Url source) {
         UrlDto result = new UrlDto();
         result.setShortUrl(baseUrl + source.getId());
-        result.setUserId(source.getUserId());
         result.setUrl(source.getOriginalUrl());
         result.setUsageCounter(source.getUsageCounter());
         return result;

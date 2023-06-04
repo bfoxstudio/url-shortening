@@ -11,9 +11,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -23,6 +26,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/")
 @RequiredArgsConstructor
+@Slf4j
 public class UrlController {
 
     private final UrlService urlService;
@@ -54,32 +58,37 @@ public class UrlController {
     @Operation(summary = "Get Short URL", description = "Generate a short URL for the provided long URL")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = UrlDto.class)))
     public ResponseEntity<UrlDto> createShortUrl(
+            @AuthenticationPrincipal Jwt principal,
             @RequestBody() UrlDto urlDto) {
-        Url url = urlService.getShortUrl(conversionService.convert(urlDto, Url.class));
+        Url url = conversionService.convert(urlDto, Url.class);
+        String userId = principal.getSubject();
+        url.setUserId(userId);
+        url = urlService.getShortUrl(url);
         return ResponseEntity.ok(conversionService.convert(url, UrlDto.class));
     }
 
-    @GetMapping("/api/v1/user/{userId}/urls")
+    @GetMapping("/api/v1/user/urls")
     @Operation(summary = "Get All User URLs", description = "Get all URLs for a specific user")
     @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = UrlDto.class))))
     public ResponseEntity<List<UrlDto>> getAllUserUrls(
-            @Parameter(description = "UserID", example = "3bea2a50-5bb7-4119-9225-6a84cd7dcca4")
-            @PathVariable String userId
+            @AuthenticationPrincipal Jwt principal
     ) {
+        String userId = principal.getSubject();
         List<Url> allUserUrls = urlService.getAllUserUrls(userId);
         List<UrlDto> urlsDto = allUserUrls.stream().map(x -> conversionService.convert(x, UrlDto.class)).toList();
         return ResponseEntity.ok(urlsDto);
     }
 
-    @DeleteMapping("/api/v1/user/{userId}/urls/{shortUrl}")
+    @DeleteMapping("/api/v1/user/urls/{shortUrl}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Disable URL", description = "Disable a URL for a specific user")
     public void disableUrl(
-            @Parameter(description = "UserID", example = "3bea2a50-5bb7-4119-9225-6a84cd7dcca4")
-            @PathVariable String userId,
+            @AuthenticationPrincipal Jwt principal,
             @Parameter(description = "ShorUrl", example = "d7dcca4")
             @PathVariable String shortUrl
     ) {
+        String userId = principal.getSubject();
         urlService.disableUrl(shortUrl, userId);
     }
 }
+

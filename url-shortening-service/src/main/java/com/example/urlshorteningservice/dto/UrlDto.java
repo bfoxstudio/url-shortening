@@ -12,9 +12,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UrlDto {
 
-    @JsonProperty("userId")
-    private String userId;
-
     @JsonProperty("url")
     private String url;
 
