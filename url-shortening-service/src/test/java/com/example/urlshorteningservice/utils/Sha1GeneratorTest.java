@@ -1,5 +1,6 @@
 package com.example.urlshorteningservice.utils;
 
+import com.example.urlshorteningservice.error.HashCalculatingException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,7 @@ class Sha1GeneratorTest {
     @DisplayName("Test getHash with empty string")
     void testGetHashWithEmptyString() {
         String input = "";
-        Assertions.assertThrows(RuntimeException.class, () -> {
+        Assertions.assertThrows(HashCalculatingException.class, () -> {
             Sha1Generator.getHash(input);
         });
     }

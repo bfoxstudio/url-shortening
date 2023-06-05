@@ -1,5 +1,6 @@
 package com.example.urlshorteningservice.utils;
 
+import com.example.urlshorteningservice.error.HashCalculatingException;
 import org.apache.logging.log4j.util.Strings;
 
 import java.security.MessageDigest;
@@ -9,7 +10,7 @@ public class Sha1Generator {
 
     public static String getHash(String in) {
         if (Strings.isEmpty(in)){
-            throw new RuntimeException("empty input for hashing");
+            throw new HashCalculatingException("empty input for hashing");
         }
         try {
             MessageDigest sha1Digest = MessageDigest.getInstance("SHA-1");
@@ -25,7 +26,7 @@ public class Sha1Generator {
             }
             return hexBuilder.toString();
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("failed to get encryption algorithm", e);
+            throw new HashCalculatingException("failed to get encryption algorithm", e);
         }
     }
 }

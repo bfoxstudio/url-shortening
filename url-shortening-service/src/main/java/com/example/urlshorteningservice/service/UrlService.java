@@ -1,5 +1,6 @@
 package com.example.urlshorteningservice.service;
 
+import com.example.urlshorteningservice.error.UrlCreationException;
 import com.example.urlshorteningservice.model.Url;
 import com.example.urlshorteningservice.repository.UrlRepository;
 import com.example.urlshorteningservice.utils.Sha1Generator;
@@ -22,11 +23,9 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class UrlService {
 
-    private final UrlRepository urlRepository;
-
-    private final Random rand = new Random();
     private final static int SHA1_LENGTH = 40;
-
+    private final UrlRepository urlRepository;
+    private final Random rand = new Random();
     @Value("${url-params.length}")
     private Integer shortUrlLength;
 
@@ -56,7 +55,7 @@ public class UrlService {
                 substringEnd += shortUrlLength;
             }
         }
-        throw new RuntimeException("failed to generate short url");
+        throw new UrlCreationException("failed to generate short url");
     }
 
     @Transactional(readOnly = true)
