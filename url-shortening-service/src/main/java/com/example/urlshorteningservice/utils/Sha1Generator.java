@@ -1,11 +1,16 @@
 package com.example.urlshorteningservice.utils;
 
+import org.apache.logging.log4j.util.Strings;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class Sha1Generator {
 
     public static String getHash(String in) {
+        if (Strings.isEmpty(in)){
+            throw new RuntimeException("empty input for hashing");
+        }
         try {
             MessageDigest sha1Digest = MessageDigest.getInstance("SHA-1");
             byte[] sha1Hash = sha1Digest.digest(in.getBytes());
@@ -23,5 +28,4 @@ public class Sha1Generator {
             throw new RuntimeException("failed to get encryption algorithm", e);
         }
     }
-
 }
