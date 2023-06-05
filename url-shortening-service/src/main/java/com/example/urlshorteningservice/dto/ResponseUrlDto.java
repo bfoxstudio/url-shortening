@@ -15,9 +15,6 @@ public class ResponseUrlDto {
     @JsonProperty("url")
     private String url;
 
-    @JsonProperty("userId")
-    private String userId;
-
     @JsonProperty("shortUrl")
     private String shortUrl;
 
